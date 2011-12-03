@@ -1,0 +1,33 @@
+Set retval to 1 if we get an error, to make life easier for folks
+who wrap dvgrab to tell if something went wrong (rhbz #486061).
+
+Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+--- dvgrab-3.4/main.cc.orig	2009-03-19 16:12:55.417171454 -0400
++++ dvgrab-3.4/main.cc	2009-03-19 16:12:22.321109256 -0400
+@@ -93,6 +93,8 @@ int rt_raisepri (int pri)
+ 
+ int main( int argc, char *argv[] )
+ {
++	int ret = 0;
++
+ 	fcntl( fileno( stderr ), F_SETFL, O_NONBLOCK );
+ 	try
+ 	{
+@@ -137,13 +139,15 @@ int main( int argc, char *argv[] )
+ 	{
+ 		fprintf( stderr, "Error: %s\n", s.c_str() );
+ 		fflush( stderr );
++		ret = 1;
+ 	}
+ 	catch ( ... )
+ 	{
+ 		fprintf( stderr, "Error: unknown\n" );
+ 		fflush( stderr );
++		ret = 1;
+ 	}
+ 
+ 	fprintf( stderr, "\n" );
+-	return 0;
++	return ret;
+ }
